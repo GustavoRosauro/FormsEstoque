@@ -106,6 +106,7 @@ namespace Estoque
             this.dgvEstoque.RowTemplate.Height = 25;
             this.dgvEstoque.Size = new System.Drawing.Size(483, 187);
             this.dgvEstoque.TabIndex = 9;
+            this.dgvEstoque.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvEstoque_CellClick);
             // 
             // Estoque
             // 

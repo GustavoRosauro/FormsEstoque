@@ -58,5 +58,35 @@ namespace Estoque.Model
                 return lista;
             }
         }
+        public void DeletarProduto(int id)
+        {
+            string sqlDelete = "DELETE FROM ESTOQUE WHERE ID = "+id;
+            using (var conn = ReturnOpenConnection())
+            {
+                using (var command = new SqlCommand(sqlDelete, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public int EditarRegistro(EstoqueModel estoque)
+        {
+            string sqlUpdate = $@"UPDATE ESTOQUE  
+                                    SET {nameof(EstoqueModel.Produto)} = @{nameof(EstoqueModel.Produto)}
+                                    ,{nameof(EstoqueModel.Preco)} = @{nameof(EstoqueModel.Preco)}
+                                    ,{nameof(EstoqueModel.Quantidade)} = @{nameof(EstoqueModel.Quantidade)}
+                                     WHERE ID = "+estoque.Id;
+            using (var conn = ReturnOpenConnection())
+            {
+                using (var cmd = new SqlCommand(sqlUpdate, conn))
+                {
+                    cmd.Parameters.AddWithValue($"@{nameof(EstoqueModel.Preco)}", estoque.Preco);
+                    cmd.Parameters.AddWithValue($"@{nameof(EstoqueModel.Produto)}", estoque.Produto);
+                    cmd.Parameters.AddWithValue($"@{nameof(EstoqueModel.Quantidade)}", estoque.Quantidade);
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+
+        }
     }
 }

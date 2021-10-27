@@ -14,6 +14,7 @@ namespace Estoque
     public partial class Estoque : Form
     {
         private readonly EstoqueDAO _estoque;
+        private int IdModel { get; set; }
         public Estoque()
         {
             InitializeComponent();
@@ -26,15 +27,27 @@ namespace Estoque
             var estoque = new EstoqueModel(txtNome.Text);
             estoque.Preco = Convert.ToDouble(txtPreco.Text);
             estoque.Quantidade = Convert.ToInt32(txtQuantidade.Text);
-            var linhas = _estoque.InserirProduto(estoque);
+            string resultado = "Inserido";
+            int linhas = 0;
+            if (IdModel == 0)
+            {
+                linhas = _estoque.InserirProduto(estoque);
+            }
+            else
+            {
+                estoque.Id = IdModel;
+                linhas = _estoque.EditarRegistro(estoque);
+                IdModel = 0;
+                resultado = "Editado";
+            }
             if (linhas < 1)
             {
-                MessageBox.Show("Erro ao inserir fale com o setor de tecnologia!");
+                MessageBox.Show("Erro fale com o setor de tecnologia!");
                 return;
             }
             else
             {
-                MessageBox.Show("Inserido com sucesso!");
+                MessageBox.Show($"{resultado} com sucesso!");
                 LimparCampos();
                 LoadGrid();
             }
@@ -57,6 +70,25 @@ namespace Estoque
         private void LoadGrid()
         { 
             dgvEstoque.DataSource = _estoque.RetornaListaProdutos();
+        }
+
+        private void dgvEstoque_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var confirm = MessageBox.Show("Deseja remover esse registro", "Delete",MessageBoxButtons.YesNo,MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                int id = Convert.ToInt32(dgvEstoque.Rows[e.RowIndex].Cells[0].Value);
+                _estoque.DeletarProduto(id);
+                LoadGrid();
+            }
+            else if (MessageBox.Show("Deseja Editar esse registro", "Update",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                IdModel = Convert.ToInt32(dgvEstoque.Rows[e.RowIndex].Cells[0].Value);
+                txtNome.Text = dgvEstoque.Rows[e.RowIndex].Cells[1].Value.ToString();
+                txtPreco.Text = dgvEstoque.Rows[e.RowIndex].Cells[2].Value.ToString();
+                txtQuantidade.Text = dgvEstoque.Rows[e.RowIndex].Cells[3].Value.ToString();
+            }
         }
     }
 }
